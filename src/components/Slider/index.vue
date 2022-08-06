@@ -65,16 +65,27 @@ const calcState = () => {
 // Dragging logic
 const dragging = ref(false);
 let dragStart = 0;
-let dragYStart = 0;
+let dragXStart = 0;
+let triggerIndex = null;
 
 useEventListener(document, "mousedown", (e) => {
+  triggerIndex = e.target.closest(".item")?.getAttribute("index");
+
   dragging.value = true;
   dragStart = e.clientX;
-  dragYStart = x.value;
+  dragXStart = x.value;
 });
 
 useEventListener(document, "mouseup", () => {
   dragging.value = false;
+  const distance = Math.abs(x.value - dragXStart);
+  const item = sliderItems.value?.[triggerIndex];
+
+  if (item && distance <= 6) {
+    handleClick(item, triggerIndex);
+  }
+
+  triggerIndex = null;
   dragStart = 0;
 });
 
@@ -83,10 +94,14 @@ useEventListener(document, "mousemove", (e) => {
     return;
   }
 
-  const distance = dragStart - e.clientX - (dragYStart - x.value);
+  const distance = dragStart - e.clientX - (dragXStart - x.value);
 
   setPosition(distance * 2);
 });
+
+const handleClick = (item) => {
+  console.log(item);
+};
 
 // Scroll logic
 useEventListener(window, "wheel", (e) => {
@@ -127,17 +142,19 @@ const { pause, resume } = useRafFn(() => {
     <Cross />
 
     <div
-      class="flex items-center h-screen overflow-x-hidden select-none"
+      class="flex items-center h-screen"
       :class="{ 'pointer-events-none': dragging }"
     >
       <div
-        class="flex items-center justify-start w-full space-x-7 pl-[50vw] -translate-x-[9vw]"
+        class="flex items-center justify-start w-full space-x-7 pl-[50vw] select-none"
+        :style="{ transform: `translateX(calc(${positionX}px + -9vw))` }"
       >
         <Item
           :key="item.image"
           v-for="(item, index) in items"
           :ref="(comp) => (sliderItems[index] = comp)"
           :item="item"
+          :index="index"
           :x="positionX"
         />
       </div>

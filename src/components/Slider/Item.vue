@@ -54,18 +54,16 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="$el" :style="{ transform: `translateX(${x}px)` }" class="item">
+  <div ref="$el" class="item">
     <div class="flex w-[18vw] h-[25.5vw] overflow-hidden">
-      <div class="w-[56vw] h-[56vh] overflow-hidden">
-        <img
-          v-bind:progress="progress"
-          class="w-full h-full object-cover"
-          :style="{
-            objectPosition: `${50 + 30 * progress}% 50%`,
-          }"
-          :src="item.image"
-        />
-      </div>
+      <img
+        v-bind:progress="progress"
+        class="w-full h-full object-cover scale-[1.25]"
+        :style="{
+          objectPosition: `${50 + 30 * progress}% 50%`,
+        }"
+        :src="item.image"
+      />
     </div>
   </div>
 </template>
